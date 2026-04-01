@@ -1,0 +1,29 @@
+from fpdf import FPDF
+import os
+
+
+# 1) Create a PDF with sample content
+pdf = FPDF()
+pdf.add_page()
+pdf.set_font("Arial", size=12)
+
+
+# Sample content
+content = [
+    "Artificial Intelligence (AI) is transforming industries like healthcare, finance, and education.",
+    "AI in healthcare helps in disease detection, drug discovery, and personalized treatments.",
+    "The Sun is a star. The Earth orbits the Sun.",
+    "Cats are playful animals and are popular pets around the world.",
+    "Machine learning is a subset of AI that focuses on algorithms that improve from data.",
+    "Robotics is an application of AI that deals with building intelligent machines."
+]
+
+
+for line in content:
+    pdf.multi_cell(0, 10, line)
+
+
+# 2) Save the PDF
+pdf_file = "ragg.pdf"
+pdf.output(pdf_file)
+print(f"PDF saved as {pdf_file}")
