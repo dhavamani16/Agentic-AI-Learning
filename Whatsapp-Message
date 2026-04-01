@@ -1,0 +1,26 @@
+import os
+from getpass import getpass
+from twilio.rest import Client
+
+TW_SID = os.environ.get('TWILIO_SID')
+TW_TOKEN = os.environ.get('TWILIO_TOKEN')
+
+if not TW_SID or not TW_TOKEN:
+    print("Enter your Twilio Account SID and Auth Token:")
+    TW_SID = getpass("Twilio SID: ")
+    TW_TOKEN = getpass("Twilio Auth Token: ")
+
+FROM = 'whatsapp:+14155238886'
+TO = input("Enter Your WhatsApp Number (e.g. +919500986233): ").strip()
+if not TO.startswith('whatsapp:'):
+    TO = f'whatsapp:{TO}'
+
+client = Client(TW_SID, TW_TOKEN)
+msg = client.messages.create(
+    body='Hello from Twilio WhatsApp Sandbox - test message!',
+    from_=FROM,
+    to=TO
+)
+
+print('Message sent successfully!')
+print('Message SID:', msg.sid)
