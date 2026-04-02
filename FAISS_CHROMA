@@ -1,0 +1,50 @@
+import os
+
+from llama_index.llms.groq import Groq
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS, Chroma
+
+os.environ["GROQ_API_KEY"] = "your_api_key_here"
+
+llm = Groq(model="llama-3.1-8b-instant")
+
+embed_model = HuggingFaceEmbedding(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+file_path = "DHAVAMANI.A_711523BCS016.pdf"
+
+documents = SimpleDirectoryReader(
+    input_files=[file_path]
+).load_data()
+
+index = VectorStoreIndex.from_documents(
+    documents,
+    embed_model=embed_model
+)
+
+query_engine = index.as_query_engine(llm=llm)
+
+response = query_engine.query("What is in the document?")
+print(response)
+
+embedding = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+faiss_db = FAISS.from_documents(documents, embedding)
+
+print("FAISS: Stored", len(faiss_db.index_to_docstore_id), "vectors")
+
+chroma_db = Chroma.from_documents(
+    documents=documents,
+    embedding=embedding,
+    collection_name="my_collection",
+    persist_directory="./chroma_store"
+)
+
+print("ChromaDB: Stored", len(chroma_db.get()['ids']), "vectors")
